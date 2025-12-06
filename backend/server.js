@@ -20,29 +20,90 @@ const getFrontendUrl = () => {
   return url.trim().replace(/[\r\n\t]/g, '');
 };
 
+// Get allowed origins
+const getAllowedOrigins = () => {
+  const frontendUrl = getFrontendUrl();
+  const origins = [];
+  
+  // Add configured frontend URL
+  if (frontendUrl && frontendUrl !== 'http://localhost:3000') {
+    origins.push(frontendUrl);
+    // Also add without trailing slash
+    if (frontendUrl.endsWith('/')) {
+      origins.push(frontendUrl.slice(0, -1));
+    } else {
+      origins.push(frontendUrl + '/');
+    }
+  }
+  
+  // Allow all Vercel deployments (for flexibility during deployment)
+  // In production, allow *.vercel.app domains
+  if (process.env.NODE_ENV === 'production') {
+    // This allows any Vercel deployment - you can restrict this later
+    // For now, we'll check if it's a Vercel domain
+    if (frontendUrl && frontendUrl.includes('vercel.app')) {
+      // Allow the specific Vercel URL and pattern
+      origins.push(frontendUrl);
+    }
+  }
+  
+  // In development, add localhost origins
+  if (process.env.NODE_ENV !== 'production') {
+    origins.push('http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173');
+  }
+  
+  return origins;
+};
+
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigin = getFrontendUrl();
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    const allowedOrigins = getAllowedOrigins();
     
-    // Check if origin matches allowed origin
-    if (origin === allowedOrigin) {
-      callback(null, true);
-    } else {
-      // In development, allow localhost
-      if (process.env.NODE_ENV !== 'production') {
-        if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
-          return callback(null, true);
-        }
-      }
-      callback(new Error('Not allowed by CORS'));
+    // Allow requests with no origin (like mobile apps, curl, Postman)
+    if (!origin) {
+      return callback(null, true);
     }
+    
+    // Check if origin is in allowed list (exact match)
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Also check if origin starts with any allowed origin (for subdomains)
+    const isAllowed = allowedOrigins.some(allowed => origin.startsWith(allowed));
+    if (isAllowed) {
+      return callback(null, true);
+    }
+    
+    // In production, allow Vercel domains (temporary - for deployment flexibility)
+    if (process.env.NODE_ENV === 'production') {
+      if (origin.includes('.vercel.app')) {
+        console.log('✅ Allowing Vercel origin:', origin);
+        return callback(null, true);
+      }
+    }
+    
+    // In development, allow any localhost
+    if (process.env.NODE_ENV !== 'production') {
+      if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+        return callback(null, true);
+      }
+    }
+    
+    // Log for debugging (always log in production for CORS issues)
+    console.log('⚠️  CORS blocked origin:', origin);
+    console.log('✅ Allowed origins:', allowedOrigins);
+    console.log('🔧 FRONTEND_URL env:', process.env.FRONTEND_URL);
+    console.log('🌍 NODE_ENV:', process.env.NODE_ENV);
+    
+    callback(new Error(`CORS: Origin ${origin} not allowed`));
   },
   credentials: true,
   optionsSuccessStatus: 200,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400, // 24 hours
 };
 
 // Middleware
