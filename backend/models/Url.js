@@ -58,7 +58,7 @@ const urlSchema = new mongoose.Schema({
 });
 
 // Index for faster queries
-urlSchema.index({ shortCode: 1 });
+// Note: shortCode index is automatically created by unique: true, so we don't need to define it again
 urlSchema.index({ createdBy: 1 });
 urlSchema.index({ expiresAt: 1 });
 

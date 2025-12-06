@@ -13,10 +13,36 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const app = express();
 
 // CORS configuration
+// Clean and validate FRONTEND_URL to prevent invalid header characters
+const getFrontendUrl = () => {
+  const url = process.env.FRONTEND_URL || 'http://localhost:3000';
+  // Remove any whitespace, newlines, or invalid characters
+  return url.trim().replace(/[\r\n\t]/g, '');
+};
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    const allowedOrigin = getFrontendUrl();
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin matches allowed origin
+    if (origin === allowedOrigin) {
+      callback(null, true);
+    } else {
+      // In development, allow localhost
+      if (process.env.NODE_ENV !== 'production') {
+        if (origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:')) {
+          return callback(null, true);
+        }
+      }
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
 // Middleware
