@@ -397,6 +397,26 @@ ISC
 
 Found a bug or want to add a feature? Feel free to open an issue or submit a pull request!
 
+## 🚀 Deployment
+
+This project is configured for deployment on **Render** (Backend) and **Vercel** (Frontend).
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions.
+
+### Quick Deploy:
+
+1. **Backend (Render)**:
+   - Connect GitHub repo
+   - Set root directory: `backend`
+   - Add environment variables (see DEPLOYMENT.md)
+   - Deploy!
+
+2. **Frontend (Vercel)**:
+   - Import GitHub repo
+   - Set root directory: `frontend`
+   - Add `VITE_API_URL` environment variable
+   - Deploy!
+
 ---
 
 **Ready to build?** Start shortening your links with Linkly! 🚀

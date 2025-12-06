@@ -36,4 +36,13 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# Deployment
+.vercel/
+.render/
+DEPLOYMENT.md
+QUICK_DEPLOY.md
 
