@@ -1,10 +1,10 @@
-# MERN Stack Template
+# Linkly - URL Shortener
 
 [![Use this template](https://img.shields.io/badge/Use%20this%20template-2ea44f?style=for-the-badge&logo=github)](https://github.com/new?template_name=mern-boilerplate&template_owner=AkshitThakur003)
 
-A production-ready MERN stack template with JWT authentication, built with MongoDB, Express, React, and Node.js. Features Redux Toolkit, Tailwind CSS, dark mode support, and a complete authentication system with refresh tokens.
+A production-ready MERN stack URL shortener with JWT authentication, built with MongoDB, Express, React, and Node.js. Features Redux Toolkit, Tailwind CSS, shadcn/ui components, Framer Motion animations, dark mode support, and a complete authentication system with refresh tokens.
 
-Perfect for quickly starting new full-stack projects with authentication already configured.
+Perfect for learning full-stack development with modern technologies and best practices.
 
 ## ✨ Features
 
@@ -14,15 +14,20 @@ Perfect for quickly starting new full-stack projects with authentication already
 - Automatic token refresh via axios interceptors
 - Protected routes on both frontend and backend
 - Signup, Login, Logout, and Profile management
+- **Rate limiting** to prevent brute force attacks
 
 ### 🎨 Frontend
 - **React 18** with Vite for fast development
 - **Redux Toolkit** for state management
 - **Tailwind CSS** with dark mode support
+- **shadcn/ui** components for modern UI
+- **Framer Motion** for smooth animations
+- **Lucide React** icons
+- Beautiful landing page with bento grid layout
 - Responsive Navbar and Sidebar with mobile support
 - Toast notifications (react-hot-toast)
 - Loading states and protected route wrappers
-- Clean, minimal UI design
+- Fully responsive design
 
 ### ⚙️ Backend
 - **Express.js** REST API
@@ -31,18 +36,32 @@ Perfect for quickly starting new full-stack projects with authentication already
 - Protected API middleware
 - CORS enabled
 - Input validation with express-validator
+- **API Rate Limiting** to prevent abuse
+- **Swagger/OpenAPI** documentation
+
+### 🔗 URL Shortening Features
+- Create short URLs with custom codes
+- Bulk URL creation (up to 50 at once)
+- QR code generation for short URLs
+- Link preview/metadata extraction
+- URL expiration dates
+- Enable/disable URLs
+- Detailed analytics (clicks, location, device, browser)
+- Weekly analytics charts
+- Top URLs tracking
+
+### 🧪 Testing
+- **Jest** for backend unit and integration tests
+- **Vitest** for frontend component tests
+- **Playwright** for E2E testing
+- Test coverage reporting
+
+### 📚 Documentation
+- **Swagger/OpenAPI** API documentation at `/api-docs`
+- Comprehensive code comments
+- Detailed README
 
 ## 🚀 Quick Start
-
-### Using as a GitHub Template
-
-1. Click the **"Use this template"** button at the top of this repository
-2. Create a new repository from the template
-3. Clone your new repository:
-   ```bash
-   git clone <your-repo-url>
-   cd <your-repo-name>
-   ```
 
 ### Installation
 
@@ -56,22 +75,18 @@ Perfect for quickly starting new full-stack projects with authentication already
    Create a `.env` file in the `backend` directory:
    ```env
    PORT=5000
-   MONGODB_URI=mongodb://localhost:27017/your-db-name
+   MONGODB_URI=mongodb://localhost:27017/linkly
    JWT_SECRET=your-super-secret-jwt-key-change-this
    JWT_REFRESH_SECRET=your-super-secret-refresh-key-change-this
    JWT_EXPIRE=7d
    JWT_REFRESH_EXPIRE=30d
    NODE_ENV=development
+   FRONTEND_URL=http://localhost:3000
    ```
 
    Create a `.env` file in the `frontend` directory (optional for development):
    ```env
    VITE_API_URL=http://localhost:5000
-   ```
-
-   **Backend `.env` - Add for development:**
-   ```env
-   FRONTEND_URL=http://localhost:3000
    ```
 
 3. **Start MongoDB**
@@ -86,6 +101,7 @@ Perfect for quickly starting new full-stack projects with authentication already
    This starts both servers concurrently with color-coded output:
    - 🔵 **BACKEND** - http://localhost:5000
    - 🟢 **FRONTEND** - http://localhost:3000
+   - 📚 **API DOCS** - http://localhost:5000/api-docs
 
    Or run them separately:
    ```bash
@@ -100,44 +116,68 @@ Perfect for quickly starting new full-stack projects with authentication already
 
 ```
 ├── backend/
+│   ├── config/
+│   │   └── swagger.js          # Swagger API documentation config
 │   ├── middleware/
-│   │   └── auth.js          # Protected route middleware
+│   │   ├── auth.js             # Protected route middleware
+│   │   └── rateLimiter.js      # Rate limiting middleware
 │   ├── models/
-│   │   └── User.js          # User mongoose model
+│   │   ├── User.js             # User mongoose model
+│   │   └── Url.js               # URL mongoose model
 │   ├── routes/
-│   │   ├── auth.js          # Auth routes (signup, login, refresh)
-│   │   └── protected.js     # Protected routes example
+│   │   ├── auth.js              # Auth routes (signup, login, refresh)
+│   │   ├── urls.js              # URL routes (CRUD, bulk, QR, preview)
+│   │   ├── protected.js        # Protected routes example
+│   │   └── redirect.js          # Public redirect route
+│   ├── tests/
+│   │   ├── setup.js             # Jest test setup
+│   │   └── __tests__/
+│   │       ├── unit/            # Unit tests
+│   │       └── integration/      # Integration tests
 │   ├── utils/
-│   │   └── generateToken.js # JWT token generation
-│   ├── server.js            # Express server entry point
+│   │   ├── generateToken.js     # JWT token generation
+│   │   ├── generateShortCode.js # Short code generation
+│   │   ├── qrCodeGenerator.js   # QR code generation
+│   │   ├── linkPreview.js       # Link metadata extraction
+│   │   └── errorHandler.js      # Error handling utilities
+│   ├── server.js                # Express server entry point
 │   └── package.json
 ├── frontend/
 │   ├── src/
-│   │   ├── components/      # Reusable components
+│   │   ├── components/          # Reusable components
+│   │   │   ├── ui/              # shadcn/ui components
 │   │   │   ├── DarkModeToggle.jsx
 │   │   │   ├── Layout.jsx
 │   │   │   ├── Loader.jsx
 │   │   │   ├── Navbar.jsx
 │   │   │   ├── ProtectedRoute.jsx
-│   │   │   └── Sidebar.jsx
-│   │   ├── pages/           # Page components
+│   │   │   ├── Sidebar.jsx
+│   │   │   ├── UrlForm.jsx
+│   │   │   ├── UrlTable.jsx
+│   │   │   ├── StatsCards.jsx
+│   │   │   ├── TopUrls.jsx
+│   │   │   └── WeeklyChart.jsx
+│   │   ├── pages/               # Page components
+│   │   │   ├── Landing.jsx      # Landing page
 │   │   │   ├── Dashboard.jsx
 │   │   │   ├── Profile.jsx
 │   │   │   ├── Login.jsx
 │   │   │   └── Signup.jsx
-│   │   ├── redux/           # Redux store and slices
-│   │   │   ├── slices/
-│   │   │   │   └── authSlice.js
-│   │   │   └── store.js
+│   │   ├── tests/               # Frontend tests
+│   │   ├── redux/               # Redux store and slices
 │   │   ├── utils/
-│   │   │   └── axios.js     # Axios instance with interceptors
+│   │   │   ├── axios.js         # Axios instance with interceptors
+│   │   │   └── config.js
+│   │   ├── lib/
+│   │   │   └── utils.js         # Utility functions
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── index.css
 │   └── package.json
-├── .eslintrc.json           # ESLint configuration
-├── .prettierrc              # Prettier configuration
-└── package.json             # Root package.json
+├── e2e/                         # E2E tests (Playwright)
+├── .eslintrc.json               # ESLint configuration
+├── .prettierrc                  # Prettier configuration
+└── package.json                 # Root package.json
 ```
 
 ## 🔑 API Endpoints
@@ -150,13 +190,77 @@ Perfect for quickly starting new full-stack projects with authentication already
 - `GET /api/auth/me` - Get current user (Protected)
 - `POST /api/auth/logout` - Logout user (Protected)
 
-### Protected Routes (`/api/protected`)
+### URL Routes (`/api/urls`)
 
-- `GET /api/protected/dashboard` - Example protected route
+- `POST /api/urls` - Create a short URL (Protected)
+  - Optional: `generateQR: true` - Generate QR code
+  - Optional: `fetchPreview: true` - Fetch link preview
+- `POST /api/urls/bulk` - Create multiple URLs at once (Protected, max 50)
+- `GET /api/urls` - Get all URLs for user (Protected)
+- `GET /api/urls/stats` - Get aggregated statistics (Protected)
+- `GET /api/urls/:id` - Get single URL details (Protected)
+- `GET /api/urls/:id/qr` - Get QR code for URL (Protected)
+- `POST /api/urls/preview` - Get link preview/metadata (Protected)
+- `PATCH /api/urls/:id` - Update URL (enable/disable) (Protected)
+- `DELETE /api/urls/:id` - Delete URL (Protected)
+
+### Public Routes
+
+- `GET /:shortCode` - Redirect to original URL
 
 All protected routes require a Bearer token:
 ```
 Authorization: Bearer <your-access-token>
+```
+
+**API Documentation:** Visit `http://localhost:5000/api-docs` for interactive Swagger documentation.
+
+## 🧪 Testing
+
+### Backend Tests
+
+```bash
+cd backend
+
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Run only unit tests
+npm run test:unit
+
+# Run only integration tests
+npm run test:integration
+```
+
+### Frontend Tests
+
+```bash
+cd frontend
+
+# Run tests
+npm test
+
+# Run tests with UI
+npm run test:ui
+
+# Run tests with coverage
+npm run test:coverage
+```
+
+### E2E Tests
+
+```bash
+# From root directory
+npx playwright test
+
+# Run with UI
+npx playwright test --ui
+
+# Run specific test
+npx playwright test e2e/landing.spec.js
 ```
 
 ## 📝 Available Scripts
@@ -170,11 +274,18 @@ Authorization: Bearer <your-access-token>
 ### Backend (`backend/`)
 - `npm start` - Start production server
 - `npm run dev` - Start development server with nodemon
+- `npm test` - Run all tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:unit` - Run unit tests only
+- `npm run test:integration` - Run integration tests only
 
 ### Frontend (`frontend/`)
 - `npm start` / `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
+- `npm test` - Run tests
+- `npm run test:ui` - Run tests with UI
+- `npm run test:coverage` - Run tests with coverage
 
 ## 🎯 How It Works
 
@@ -186,37 +297,65 @@ Authorization: Bearer <your-access-token>
 4. When access token expires, axios interceptor automatically refreshes it
 5. If refresh fails, user is logged out and redirected to login
 
-### Dark Mode
+### URL Shortening Flow
 
-Dark mode preference is saved in localStorage and persists across sessions. Toggle via the button in the navbar.
+1. User creates a short URL → system generates unique short code
+2. Short code is stored in database with original URL
+3. When someone visits `/:shortCode`, system redirects to original URL
+4. Analytics are tracked (clicks, IP, device, browser, location)
+5. User can view analytics in dashboard
 
-## 🛠️ Customization
+### Rate Limiting
 
-### Adding New Routes
+- **General API**: 100 requests per 15 minutes per IP
+- **Authentication**: 5 requests per 15 minutes per IP (prevents brute force)
+- **URL Creation**: 10 requests per minute per IP (prevents spam)
 
-**Backend:**
-1. Create a new route file in `backend/routes/`
-2. Import and use it in `server.js`
+## 🛠️ Advanced Features
 
-**Frontend:**
-1. Add route in `frontend/src/App.jsx`
-2. Create page component in `frontend/src/pages/`
-3. Add menu item in `frontend/src/components/Sidebar.jsx`
+### QR Code Generation
 
-### Adding Sidebar Menu Items
+Generate QR codes for your short URLs:
 
-Edit `frontend/src/components/Sidebar.jsx`:
 ```javascript
-const menuItems = [
-  { name: 'Dashboard', href: '/dashboard', icon: '...' },
-  { name: 'Profile', href: '/profile', icon: '...' },
-  // Add more items here
-]
+// When creating URL
+POST /api/urls
+{
+  "originalUrl": "https://example.com",
+  "generateQR": true
+}
+
+// Or get QR code for existing URL
+GET /api/urls/:id/qr
 ```
 
-### Styling
+### Bulk URL Creation
 
-This template uses Tailwind CSS. Customize the theme in `frontend/tailwind.config.js`.
+Create multiple URLs at once:
+
+```javascript
+POST /api/urls/bulk
+{
+  "urls": [
+    { "originalUrl": "https://example.com/1" },
+    { "originalUrl": "https://example.com/2", "shortCode": "custom" },
+    { "originalUrl": "https://example.com/3", "expiresAt": "2024-12-31T23:59:59Z" }
+  ]
+}
+```
+
+### Link Preview
+
+Get metadata/preview for any URL:
+
+```javascript
+POST /api/urls/preview
+{
+  "url": "https://example.com"
+}
+
+// Returns: title, description, image, siteName
+```
 
 ## 🧰 Technologies
 
@@ -228,6 +367,12 @@ This template uses Tailwind CSS. Customize the theme in `frontend/tailwind.confi
 - JWT (jsonwebtoken)
 - bcryptjs
 - express-validator
+- express-rate-limit
+- qrcode
+- swagger-jsdoc
+- swagger-ui-express
+- Jest (testing)
+- Supertest (testing)
 
 **Frontend:**
 - React 18
@@ -236,7 +381,13 @@ This template uses Tailwind CSS. Customize the theme in `frontend/tailwind.confi
 - React Router DOM
 - Axios
 - Tailwind CSS
+- shadcn/ui
+- Framer Motion
+- Lucide React
 - react-hot-toast
+- recharts
+- Vitest (testing)
+- Playwright (E2E testing)
 
 ## 📄 License
 
@@ -248,4 +399,4 @@ Found a bug or want to add a feature? Feel free to open an issue or submit a pul
 
 ---
 
-**Ready to build?** Click "Use this template" and start coding! 🚀
+**Ready to build?** Start shortening your links with Linkly! 🚀

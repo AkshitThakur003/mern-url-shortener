@@ -74,16 +74,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
       {/* Mobile backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-gray-600 bg-opacity-75 z-40 lg:hidden"
+          className="fixed inset-0 bg-background/90 backdrop-blur-sm z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
       {/* Sidebar */}
       <aside
-        className={`sidebar fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform ${
+        className={`sidebar fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64 bg-card border-r border-border transform ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 transition-transform duration-200 ease-in-out`}
+        } lg:translate-x-0 transition-transform duration-200 ease-in-out shadow-lg`}
       >
         <div className="h-full px-3 py-4 overflow-y-auto">
           <ul className="space-y-2">
@@ -91,12 +91,12 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
               const isActive = item.action === null && location.pathname === item.href
               const baseClasses = `flex items-center p-2.5 text-base font-normal rounded-lg transition-colors duration-200`
               const activeClasses = isActive
-                ? 'bg-indigo-600 text-white dark:bg-indigo-500 shadow-md'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                ? 'bg-primary text-primary-foreground shadow-md'
+                : 'text-foreground hover:bg-accent hover:text-accent-foreground'
               
               const iconClasses = isActive
-                ? 'text-white dark:text-white'
-                : 'text-gray-500 dark:text-gray-400'
+                ? 'text-primary-foreground'
+                : 'text-muted-foreground'
 
               if (item.action) {
                 return (

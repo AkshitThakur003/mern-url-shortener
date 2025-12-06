@@ -4,15 +4,48 @@ const User = require('../models/User');
 const { generateToken, generateRefreshToken } = require('../utils/generateToken');
 const { protect } = require('../middleware/auth');
 const { sendErrorResponse, handleMongoError } = require('../utils/errorHandler');
+const { authLimiter } = require('../middleware/rateLimiter');
 const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
-// @route   POST /api/auth/signup
-// @desc    Register a new user
-// @access  Public
+/**
+ * @swagger
+ * /api/auth/signup:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 minLength: 6
+ *                 example: password123
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Validation error or user already exists
+ */
 router.post(
   '/signup',
+  authLimiter,
   [
     body('name').trim().notEmpty().withMessage('Name is required'),
     body('email').isEmail().withMessage('Please include a valid email'),
@@ -89,11 +122,38 @@ router.post(
   }
 );
 
-// @route   POST /api/auth/login
-// @desc    Login user
-// @access  Public
+/**
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login user
+ *     tags: [Authentication]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 format: email
+ *                 example: john@example.com
+ *               password:
+ *                 type: string
+ *                 example: password123
+ *     responses:
+ *       200:
+ *         description: Login successful
+ *       401:
+ *         description: Invalid credentials
+ */
 router.post(
   '/login',
+  authLimiter,
   [
     body('email').isEmail().withMessage('Please include a valid email'),
     body('password').notEmpty().withMessage('Password is required'),

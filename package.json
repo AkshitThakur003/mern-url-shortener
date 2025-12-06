@@ -10,9 +10,17 @@
     "build": "cd frontend && npm run build",
     "install-server": "cd backend && npm install",
     "install-client": "cd frontend && npm install",
-    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "test": "cd backend && npm test && cd ../frontend && npm test",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
-  "keywords": ["mern", "boilerplate", "jwt", "auth"],
+  "keywords": [
+    "mern",
+    "boilerplate",
+    "jwt",
+    "auth"
+  ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
@@ -20,4 +28,3 @@
     "nodemon": "^3.0.2"
   }
 }
-

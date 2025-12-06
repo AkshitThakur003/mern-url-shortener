@@ -1,17 +1,19 @@
 import { useSelector } from 'react-redux'
+import { Link2 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import DarkModeToggle from './DarkModeToggle'
 
 const Navbar = ({ setSidebarOpen }) => {
   const { user } = useSelector((state) => state.auth)
 
   return (
-    <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 fixed w-full top-0 z-50">
-      <div className="px-4 sm:px-6 lg:px-8">
+    <nav className="bg-card shadow-sm border-b border-border fixed w-full top-0 z-50 backdrop-blur-none">
+      <div className="px-4 sm:px-6 lg:px-8 bg-card">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <button
               type="button"
-              className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+              className="lg:hidden inline-flex items-center justify-center p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary"
               onClick={() => setSidebarOpen(true)}
             >
               <span className="sr-only">Open sidebar</span>
@@ -30,15 +32,16 @@ const Navbar = ({ setSidebarOpen }) => {
                 />
               </svg>
             </button>
-            <div className="ml-4 lg:ml-0">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
-                App
+            <Link to="/dashboard" className="ml-4 lg:ml-0 flex items-center space-x-2">
+              <Link2 className="h-6 w-6 text-primary" />
+              <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                Linkly
               </h1>
-            </div>
+            </Link>
           </div>
           <div className="flex items-center space-x-4">
             <DarkModeToggle />
-            <span className="text-sm text-gray-700 dark:text-gray-300 hidden sm:block">
+            <span className="text-sm text-muted-foreground hidden sm:block">
               {user?.name}
             </span>
           </div>

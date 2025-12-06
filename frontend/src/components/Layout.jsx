@@ -18,11 +18,11 @@ const Layout = ({ children }) => {
   }, [])
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-background">
       <Navbar setSidebarOpen={setSidebarOpen} />
       <div className="flex pt-16">
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <main className="flex-1 lg:ml-64 min-h-[calc(100vh-4rem)]">
+        <main className="flex-1 lg:ml-64 min-h-[calc(100vh-4rem)] bg-background">
           {children}
         </main>
       </div>

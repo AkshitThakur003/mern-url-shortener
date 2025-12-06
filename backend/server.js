@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./config/swagger');
+const { apiLimiter } = require('./middleware/rateLimiter');
 
 // Load .env file from backend directory regardless of where server.js is called from
 dotenv.config({ path: path.join(__dirname, '.env') });
@@ -21,10 +24,24 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Apply general API rate limiting
+app.use('/api', apiLimiter);
+
+// Swagger API Documentation
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Linkly API Documentation',
+}));
+
 // Routes
+// API routes (must be before redirect route to avoid conflicts)
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api/urls', require('./routes/urls'));
 app.use('/api/protected', require('./routes/protected'));
 app.use('/api/test', require('./routes/test'));
+
+// Public redirect route (must be last to catch short codes)
+app.use('/', require('./routes/redirect'));
 
 // MongoDB Connection
 const connectDB = async () => {
@@ -106,7 +123,13 @@ connectDB();
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Only start server if not in test environment
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+// Export app for testing
+module.exports = app;
 

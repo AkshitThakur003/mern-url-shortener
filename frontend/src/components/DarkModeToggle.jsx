@@ -1,60 +1,64 @@
 import { useState, useEffect } from 'react'
+import { Moon, Sun } from 'lucide-react'
 
 const DarkModeToggle = () => {
+  // Initialize dark mode from localStorage or system preference
   const [darkMode, setDarkMode] = useState(() => {
+    // Check localStorage first
     const saved = localStorage.getItem('darkMode')
-    return saved ? JSON.parse(saved) : false
+    if (saved !== null) {
+      return JSON.parse(saved)
+    }
+    // Fall back to system preference
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
   })
 
   useEffect(() => {
+    // Apply dark mode class immediately on mount
+    const root = document.documentElement
     if (darkMode) {
-      document.documentElement.classList.add('dark')
+      root.classList.add('dark')
     } else {
-      document.documentElement.classList.remove('dark')
+      root.classList.remove('dark')
     }
+    
+    // Save to localStorage
     localStorage.setItem('darkMode', JSON.stringify(darkMode))
+    
+    // Listen for system theme changes (optional)
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    const handleChange = (e) => {
+      // Only update if user hasn't manually set a preference
+      if (!localStorage.getItem('darkMode')) {
+        if (e.matches) {
+          root.classList.add('dark')
+          setDarkMode(true)
+        } else {
+          root.classList.remove('dark')
+          setDarkMode(false)
+        }
+      }
+    }
+    
+    mediaQuery.addEventListener('change', handleChange)
+    return () => mediaQuery.removeEventListener('change', handleChange)
   }, [darkMode])
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode)
+    setDarkMode((prev) => !prev)
   }
 
   return (
     <button
       onClick={toggleDarkMode}
-      className="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
-      aria-label="Toggle dark mode"
+      className="p-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary transition-colors"
+      aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+      title={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
     >
       {darkMode ? (
-        <svg
-          className="h-6 w-6"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-          />
-        </svg>
+        <Sun className="h-5 w-5 sm:h-6 sm:w-6" />
       ) : (
-        <svg
-          className="h-6 w-6"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-          />
-        </svg>
+        <Moon className="h-5 w-5 sm:h-6 sm:w-6" />
       )}
     </button>
   )

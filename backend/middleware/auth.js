@@ -1,7 +1,15 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Protect routes
+/**
+ * Authentication middleware to protect routes
+ * Verifies JWT token and attaches user to request object
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {void}
+ */
 exports.protect = async (req, res, next) => {
   let token;
 
